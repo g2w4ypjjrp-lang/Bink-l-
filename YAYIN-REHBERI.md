@@ -36,7 +36,8 @@ Notlar:
 | Sürüm | Açıklama |
 |---|---|
 | `123ac82c-b2d8-471f-94d6-9462321d1ec6` | Değişiklikten **önceki** sürüm (her sayfa Worker'da üretiliyordu) |
-| `a967d611-fe62-46c4-baf9-0b1a58fcf3c7` | Statik sayfalı **yeni** sürüm (19.11.2026) |
+| `a967d611-fe62-46c4-baf9-0b1a58fcf3c7` | Statik sayfalı yeni sürüm (19.11.2026) |
+| `978eb176-4794-4451-85f0-c42a43225119` | + mobil menü düzeltmesi (**güncel**) |
 
 **Panelden (en kolay):** Cloudflare → Workers & Pages → `sakli-bahce` → **Deployments** → istediğiniz sürümün
 yanındaki **⋯** → **Rollback**.

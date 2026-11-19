@@ -33,8 +33,9 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
   }, [open]);
 
   const solid = scrolled || open;
+  // Menü açıkken backdrop-blur KULLANILMAZ: blur, içindeki "fixed" mobil menüyü üst çubuğun boyuna hapseder (arka plan tam ekranı kaplamaz).
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${solid ? "bg-ivory/92 shadow-[0_1px_0_rgba(36,39,34,0.06)] backdrop-blur-xl" : "bg-gradient-to-b from-deep/50 to-transparent"}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${open ? "bg-ivory" : solid ? "bg-ivory/92 shadow-[0_1px_0_rgba(36,39,34,0.06)] backdrop-blur-xl" : "bg-gradient-to-b from-deep/50 to-transparent"}`}>
       <div className={`container-x flex items-center justify-between transition-all duration-500 ${solid ? "h-[72px]" : "h-[88px]"}`}>
         <Link href="/" aria-label="Ana sayfa" className="relative z-10">
           <Logo logo={logo} tone={solid ? "dark" : "light"} />
@@ -66,7 +67,7 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
           </button>
         </div>
       </div>
-      <div id="mobile-nav" className={`fixed inset-0 top-0 -z-0 bg-ivory transition-[opacity,visibility] duration-500 lg:hidden ${open ? "visible opacity-100" : "invisible opacity-0"}`}>
+      <div id="mobile-nav" className={`fixed inset-0 top-0 -z-0 h-dvh overflow-y-auto bg-ivory transition-[opacity,visibility] duration-500 lg:hidden ${open ? "visible opacity-100" : "invisible opacity-0"}`}>
         <nav aria-label="Mobil menü" className="container-x flex h-full flex-col pb-10 pt-28">
           <ul className="space-y-1">
             {[{ href: "/", label: "Ana Sayfa" }, ...NAV, { href: "/rezervasyon", label: "Rezervasyon" }].map((n, i) => (
