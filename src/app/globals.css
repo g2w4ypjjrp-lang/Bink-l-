@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #173d2b;
+  --color-deep: #10291d;
+  --color-sage: #84977d;
+  --color-sage-light: #c9d2c3;
+  --color-cream: #f6f1e7;
+  --color-ivory: #fffdf8;
+  --color-beige: #dccdb8;
+  --color-gold: #b89a62;
+  --color-gold-dark: #8f7442;
+  --color-charcoal: #242722;
+  --color-moss: #2c5a40;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-manrope), "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 0.9s var(--ease-soft) both;
+  --animate-rise: rise 1s var(--ease-soft) both;
+  --animate-scroll-dot: scroll-dot 2.2s ease-in-out infinite;
+  --animate-ken-burns: ken-burns 24s ease-out both;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes rise {
+    from { transform: translateY(26px); }
+    to { transform: none; }
+  }
+  @keyframes scroll-dot {
+    0% { transform: translateY(0); opacity: 0; }
+    30% { opacity: 1; }
+    80% { transform: translateY(14px); opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes ken-burns {
+    from { transform: scale(1.12); }
+    to { transform: scale(1); }
+  }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-ivory text-charcoal font-sans antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: var(--color-forest); color: var(--color-cream); }
+  :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+@utility container-x { margin-inline: auto; width: 100%; max-width: 1320px; padding-inline: 1.25rem; @variant sm { padding-inline: 2rem; } @variant lg { padding-inline: 3rem; } }
+@utility eyebrow {
+  display: inline-flex; align-items: center; gap: 0.75rem; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--color-gold);
+  &::before { content: ""; display: block; height: 1px; width: 2rem; background: currentColor; opacity: 0.7; }
+}
+@utility h-display { font-family: var(--font-display); font-weight: 400; line-height: 0.98; letter-spacing: -0.02em; }
+@utility btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 9999px; padding: 0.875rem 1.5rem; font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; letter-spacing: 0.025em;
+  transition: all 300ms ease-out; cursor: pointer;
+  &:disabled { cursor: not-allowed; opacity: 0.6; }
+}
+@utility btn-primary { @apply btn bg-forest text-cream hover:bg-deep hover:shadow-[0_10px_30px_-10px_rgba(16,41,29,0.6)]; }
+@utility btn-gold { @apply btn bg-gold text-deep hover:bg-[#c8ab74]; }
+@utility btn-ghost { @apply btn border border-current/30 hover:border-current hover:bg-current/5; }
+@utility btn-light { @apply btn bg-ivory/95 text-forest backdrop-blur hover:bg-ivory; }
+@utility field { @apply block w-full rounded-xl border border-beige bg-ivory px-4 py-3 text-[15px] text-charcoal placeholder:text-charcoal/40 transition focus:border-forest focus:outline-none focus:ring-4 focus:ring-forest/10 disabled:opacity-60; }
+@utility label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-charcoal/70; }
+
+@layer components {
+  .prose-brand p + p { margin-top: 1.25rem; }
+  .grain { position: relative; }
+  .grain::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.07; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .leaf-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M60 18c14 10 20 24 18 40-12-4-22-14-18-40zM60 18c-14 10-20 24-18 40 12-4 22-14 18-40z' fill='none' stroke='%23B89A62' stroke-opacity='.18' stroke-width='1'/%3E%3C/svg%3E");
+  }
+}
+
+/* Scroll reveal — yalnızca JS aktifken gizle (JS yoksa içerik görünür kalır) */
+.js [data-reveal] { opacity: 0; transform: translateY(32px); transition: opacity 1s var(--ease-soft), transform 1s var(--ease-soft); transition-delay: var(--reveal-delay, 0ms); }
+.js [data-reveal="fade"] { transform: none; }
+.js [data-reveal="scale"] { transform: scale(0.96); }
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+
+.img-zoom img { transition: transform 1.2s var(--ease-soft); }
+.img-zoom:hover img { transform: scale(1.045); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+.link-underline { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.4s var(--ease-soft); }
+.link-underline:hover { background-size: 100% 1px; }

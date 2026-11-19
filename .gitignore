@@ -1,0 +1,24 @@
+node_modules
+.next
+out
+.env
+.env.local
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/backups
+*.tsbuildinfo
+next-env.d.ts
+test-results
+binkilic-sakli-bahce-kaynak.zip
+ekran-goruntuleri/
+.open-next
+.wrangler
+# Gizli bilgiler — asla depoya girmez
+.env*
+!.env.example
+.dev.vars*
+.deploy.env
+.secrets.json
+.login-url
+binkilic-gorseller.zip
+netlify.toml
