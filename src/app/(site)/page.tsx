@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { StatusDot, StatusLabel, StatusDetail } from "@/components/site/LiveStatus";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Phone, Mail, Instagram, MapPin, Navigation, Star, Clock, Plus } from "lucide-react";
 import { db } from "@/lib/db";
@@ -14,6 +15,9 @@ import { MapEmbed } from "@/components/site/MapEmbed";
 import { WhatsAppIcon } from "@/components/site/WhatsAppFab";
 import { JsonLd } from "@/components/site/JsonLd";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("home", {
     title: "BinKılıç Saklı Bahçe | Çatalca'da Doğa İçinde Restoran & Kahvaltı",
@@ -25,7 +29,7 @@ export async function generateMetadata() {
 const d = (ms: number) => ({ ["--reveal-delay" as string]: `${ms}ms` });
 
 export default async function Home() {
-  const [page, { settings: s, status }, menu, reviews, gallery, galleryCats, events, campaigns] = await Promise.all([
+  const [page, { settings: s }, menu, reviews, gallery, galleryCats, events, campaigns] = await Promise.all([
     getPage("home"),
     getSiteData(),
     getMenuData(),
@@ -90,7 +94,7 @@ export default async function Home() {
             Keşfet
           </div>
           <div className="absolute bottom-9 right-12 hidden items-center gap-2 rounded-full border border-cream/15 bg-deep/30 px-4 py-2 text-xs backdrop-blur lg:flex">
-            <Clock size={14} className="text-gold" /> {status.label} · <span className="text-cream/60">{status.detail}</span>
+            <Clock size={14} className="text-gold" /> <StatusLabel /> · <span className="text-cream/60"><StatusDetail /></span>
           </div>
         </section>
       )}
@@ -456,8 +460,8 @@ export default async function Home() {
               </div>
               <div className="mt-12 rounded-[24px] bg-ivory p-6" data-reveal>
                 <p className="flex items-center gap-2 text-sm font-semibold">
-                  <span className={`h-2 w-2 rounded-full ${status.open ? "bg-emerald-500" : "bg-red-500"}`} /> {status.label}
-                  <span className="font-normal text-charcoal/55">· {status.detail}</span>
+                  <StatusDot className="h-2 w-2 rounded-full" openClass="bg-emerald-500" closedClass="bg-red-500" /> <StatusLabel />
+                  <span className="font-normal text-charcoal/55">· <StatusDetail /></span>
                 </p>
                 <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
                   {[1, 2, 3, 4, 5, 6, 0].map((day) => {

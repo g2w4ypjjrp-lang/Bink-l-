@@ -1,6 +1,9 @@
 import { getSettings } from "@/lib/settings";
 import { PageHero } from "@/components/site/PageHero";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export const metadata = { title: "KVKK Aydınlatma Metni", alternates: { canonical: "/kvkk" } };
 
 export default async function Kvkk() {

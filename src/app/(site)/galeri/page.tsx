@@ -5,6 +5,9 @@ import { PageHero } from "@/components/site/PageHero";
 import { GalleryGrid } from "@/components/site/Gallery";
 import { JsonLd } from "@/components/site/JsonLd";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("gallery", { title: "Galeri", description: "BinKılıç Saklı Bahçe'den fotoğraflar: bahçe, kahvaltı, yemekler, düğün ve organizasyonlar.", path: "/galeri" });
 }

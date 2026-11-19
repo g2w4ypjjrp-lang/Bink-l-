@@ -13,6 +13,9 @@ import { EventForm } from "@/components/site/forms";
 import { JsonLd } from "@/components/site/JsonLd";
 import { WhatsAppIcon } from "@/components/site/WhatsAppFab";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("organization", {
     title: "Organizasyon — Doğum Günü, Nişan, Düğün, Kurumsal Etkinlik",
@@ -23,8 +26,8 @@ export async function generateMetadata() {
 
 const d = (ms: number) => ({ ["--reveal-delay" as string]: `${ms}ms` });
 
-export default async function Organization({ searchParams }: { searchParams: Promise<{ tur?: string }> }) {
-  const [{ content: c }, events, s, sp] = await Promise.all([getPage("organization"), db.event.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }), getSettings(), searchParams]);
+export default async function Organization() {
+  const [{ content: c }, events, s] = await Promise.all([getPage("organization"), db.event.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }), getSettings()]);
   return (
     <>
       <PageHero eyebrow={str(c.hero, "eyebrow")} title={str(c.hero, "title")} text={str(c.hero, "text")} image={str(c.hero, "image")} />
@@ -92,7 +95,7 @@ export default async function Organization({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <div className="rounded-[32px] border border-beige/80 bg-cream/60 p-6 sm:p-10 lg:col-span-7 lg:col-start-6" data-reveal>
-            <EventForm types={events.map((e) => ({ key: e.key, name: e.name }))} budgets={BUDGETS} initialType={sp.tur} />
+            <EventForm types={events.map((e) => ({ key: e.key, name: e.name }))} budgets={BUDGETS} />
           </div>
         </div>
         <p className="mt-10 text-center text-sm text-charcoal/55">

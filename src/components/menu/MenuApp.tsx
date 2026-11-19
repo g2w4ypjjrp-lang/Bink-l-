@@ -7,6 +7,8 @@ import type { MenuData, MenuProduct, MenuCategory } from "@/lib/menu";
 import { getDict, LOCALE_NAMES, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { sendEvent } from "@/components/site/Tracker";
+import { useOpenStatus } from "@/components/site/LiveStatus";
+import { isLocale } from "@/lib/i18n";
 import { DietIcons, Price, Tags, fmt, normalize, readLS, writeLS, priceInfo } from "./shared";
 import { ProductSheet } from "./ProductSheet";
 import { CartSheet, type CartItem } from "./CartSheet";
@@ -19,9 +21,8 @@ type Props = {
   showPrices: boolean;
   orderingEnabled: boolean;
   footerNote: string;
-  table: { number: number; token: string; name: string | null } | null;
-  openProductSlug: string | null;
-  fromQr: boolean;
+  /** Aktif masalar; hangi masada olunduğu adres çubuğundaki ?table=&t= ile tarayıcıda belirlenir. */
+  tables: { number: number; name: string | null }[];
   business: { name: string; phone: string; tel: string; wa: string; address: string; logo: string };
   status: { open: boolean; label: string; detail: string };
   cover: { title: string; text: string; image: string };
@@ -33,11 +34,26 @@ function nowMinutesIstanbul() {
   const p = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Istanbul", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date());
   return (Number(p.find((x) => x.type === "hour")?.value) % 24) * 60 + Number(p.find((x) => x.type === "minute")?.value);
 }
+/** Menü kutucukları için ~240 px küçük sürüm (yayın sırasında üretilir: x.webp → x_s.webp) */
+const smallImage = (u: string) => (u.startsWith("/uploads/") ? u.replace(/\.(webp|jpe?g|png|avif|gif)$/i, "_s.webp") : u);
 const toMin = (t: string) => Number(t.split(":")[0]) * 60 + Number(t.split(":")[1] || 0);
 
 export function MenuApp(props: Props) {
-  const { data, currency, showPrices, orderingEnabled, table, business, status, cover } = props;
+  const { data, currency, showPrices, orderingEnabled, business, cover } = props;
+  const status = useOpenStatus(props.status);
   const [locale, setLocale] = useState<Locale>(props.initialLocale as Locale);
+  // Sayfa statik olduğundan adres parametreleri tarayıcıda okunur
+  const [url, setUrl] = useState<{ table: { number: number; token: string; name: string | null } | null; product: string | null; fromQr: boolean } | null>(null);
+  useEffect(() => {
+    const sp = new URLSearchParams(location.search);
+    const n = Number(sp.get("table"));
+    const row = Number.isInteger(n) && n > 0 ? props.tables.find((x) => x.number === n) : undefined;
+    const lang = sp.get("lang");
+    if (lang && isLocale(lang) && props.locales.includes(lang)) setLocale(lang as Locale);
+    setUrl({ table: row ? { number: row.number, token: sp.get("t") || "", name: row.name } : null, product: sp.get("urun"), fromQr: sp.get("src") === "qr" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const table = url?.table ?? null;
   const t = getDict(locale);
   const L = useCallback((o: Record<string, string>) => o[locale] || o.tr || "", [locale]);
 
@@ -64,11 +80,12 @@ export function MenuApp(props: Props) {
 
   // ── yerel depolama
   useEffect(() => {
+    if (!url) return;
     const saved = readLS<string | null>("sb_locale", null);
     if (saved && props.locales.includes(saved) && !new URLSearchParams(location.search).get("lang")) setLocale(saved as Locale);
     setFavorites(readLS("sb_favs", []));
     setCart(readLS(cartKey, []));
-    sendEvent({ type: "menu_view", path: "/menu" + (table ? `?table=${table.number}` : ""), qr: props.fromQr, ref: document.referrer || undefined });
+    sendEvent({ type: "menu_view", path: "/menu" + (table ? `?table=${table.number}` : ""), qr: url.fromQr, ref: document.referrer || undefined });
     if (table) {
       const url = new URL(location.href);
       url.searchParams.delete("src");
@@ -79,7 +96,7 @@ export function MenuApp(props: Props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [url]);
   useEffect(() => writeLS("sb_locale", locale), [locale]);
   useEffect(() => writeLS("sb_favs", favorites), [favorites]);
   useEffect(() => writeLS(cartKey, cart), [cart, cartKey]);
@@ -195,12 +212,12 @@ export function MenuApp(props: Props) {
     return () => window.removeEventListener("popstate", on);
   }, []);
   useEffect(() => {
-    if (props.openProductSlug) {
-      const p = data.products.find((x) => x.slug === props.openProductSlug);
+    if (url?.product) {
+      const p = data.products.find((x) => x.slug === url.product);
       if (p) openProduct(p);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [url]);
   // URL hash ile kategoriye git (/menu#tatlilar)
   useEffect(() => {
     const h = decodeURIComponent(location.hash.slice(1));
@@ -431,7 +448,7 @@ export function MenuApp(props: Props) {
                           </button>
                           {p.images[0] && (
                             <button onClick={() => openProduct(p)} className="relative h-[104px] w-[104px] shrink-0 overflow-hidden rounded-2xl bg-beige" tabIndex={-1} aria-hidden="true">
-                              <Image src={p.images[0].url} alt="" fill sizes="104px" className="object-cover" />
+                              <Image src={smallImage(p.images[0].url)} alt="" fill sizes="104px" className="object-cover" />
                               {!p.inStock && <span className="absolute inset-0 flex items-center justify-center bg-charcoal/50 text-[11px] font-bold uppercase text-cream">{t.soldOut}</span>}
                             </button>
                           )}

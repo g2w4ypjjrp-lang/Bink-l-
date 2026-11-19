@@ -3,15 +3,18 @@ import { db } from "@/lib/db";
 import { hasPermission, type PermissionKey } from "@/lib/permissions";
 import { Shell, type NavItem } from "@/components/admin/Shell";
 import { AdminProviders } from "@/components/admin/ui";
+import { PublishBar } from "@/components/admin/PublishBar";
+import { getPublishState } from "@/lib/publish";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const p = (k: PermissionKey | PermissionKey[]) => hasPermission(user.permissions, k);
-  const [newRes, newOrders, newEvents, unreadMsgs] = await Promise.all([
+  const [newRes, newOrders, newEvents, unreadMsgs, publish] = await Promise.all([
     p("reservations.view") ? db.reservation.count({ where: { status: "pending" } }) : 0,
     p("orders.view") ? db.order.count({ where: { status: { in: ["new", "preparing", "ready"] } } }) : 0,
     p("events.manage") ? db.eventRequest.count({ where: { status: "new" } }) : 0,
     p("messages.manage") ? db.contactMessage.count({ where: { status: "unread", archived: false } }) : 0,
+    p(["menu.manage", "pages.manage", "gallery.manage", "campaigns.manage", "settings.manage"]) ? getPublishState() : null,
   ]);
   const groups: { group: string; items: (NavItem & { perm: PermissionKey | PermissionKey[] })[] }[] = [
     { group: "Genel", items: [{ href: "/admin", label: "Dashboard", icon: "LayoutDashboard", perm: "dashboard.view" }, { href: "/admin/analitik", label: "Analitik", icon: "BarChart3", perm: "analytics.view" }] },
@@ -55,6 +58,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <AdminProviders>
       <Shell nav={nav} user={{ name: user.name, email: user.email, roleName: user.roleName }}>
+        {publish && <PublishBar state={publish} />}
         {children}
       </Shell>
     </AdminProviders>

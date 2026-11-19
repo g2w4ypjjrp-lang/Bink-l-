@@ -7,6 +7,9 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading, Paragraphs } from "@/components/site/Section";
 import { JsonLd } from "@/components/site/JsonLd";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("about", { title: "Hakkımızda", description: "BinKılıç Saklı Bahçe'nin hikâyesi: Çatalca Binkılıç'ta doğaya bağlı bir aile işletmesi.", path: "/hakkimizda" });
 }

@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin, Clock, Instagram, Navigation } from "lucide-react";
+import { StatusDot, StatusLabel, StatusDetail } from "@/components/site/LiveStatus";
 import { getPage, str } from "@/lib/content";
 import { getSiteData } from "@/lib/site";
 import { pageMetadata, breadcrumb } from "@/lib/seo";
@@ -11,12 +12,15 @@ import { MapEmbed } from "@/components/site/MapEmbed";
 import { JsonLd } from "@/components/site/JsonLd";
 import { WhatsAppIcon } from "@/components/site/WhatsAppFab";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("contact", { title: "İletişim ve Yol Tarifi", description: "BinKılıç Saklı Bahçe iletişim bilgileri, çalışma saatleri, adres ve Çatalca Binkılıç yol tarifi.", path: "/iletisim" });
 }
 
 export default async function Contact() {
-  const [{ content: c }, { settings: s, specials, status }] = await Promise.all([getPage("contact"), getSiteData()]);
+  const [{ content: c }, { settings: s, specials }] = await Promise.all([getPage("contact"), getSiteData()]);
   const b = s.business;
   const dest = encodeURIComponent(b.lat && b.lng ? `${b.lat},${b.lng}` : b.mapsQuery);
   const upcoming = specials.filter((x) => x.date >= new Date(Date.now() - 864e5)).slice(0, 5);
@@ -64,8 +68,8 @@ export default async function Contact() {
                 <Clock className="text-gold" /> Çalışma saatleri
               </h2>
               <p className="mt-3 flex items-center gap-2 text-sm font-semibold">
-                <span className={`h-2 w-2 rounded-full ${status.open ? "bg-emerald-500" : "bg-red-500"}`} />
-                {status.label} <span className="font-normal text-charcoal/55">· {status.detail}</span>
+                <StatusDot className="h-2 w-2 rounded-full" openClass="bg-emerald-500" closedClass="bg-red-500" />
+                <StatusLabel /> <span className="font-normal text-charcoal/55">· <StatusDetail /></span>
               </p>
               <dl className="mt-5 divide-y divide-beige rounded-2xl border border-beige">
                 {[1, 2, 3, 4, 5, 6, 0].map((day) => {

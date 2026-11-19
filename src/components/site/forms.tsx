@@ -230,6 +230,12 @@ export function EventForm({ types, budgets, initialType }: { types: { key: strin
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [type, setType] = useState(initialType || "");
+  // Statik sayfa: ?tur= tarayıcıda okunur
+  useEffect(() => {
+    const t = new URLSearchParams(location.search).get("tur");
+    if (t && types.some((x) => x.key === t)) setType(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     const h = (e: Event) => setType((e as CustomEvent<string>).detail);
     window.addEventListener("select-event-type", h);

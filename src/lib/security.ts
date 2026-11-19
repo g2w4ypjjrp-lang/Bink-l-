@@ -55,11 +55,4 @@ export function isBot(ua: string): boolean {
   return /bot|crawl|spider|slurp|lighthouse|headless|preview|facebookexternalhit/i.test(ua);
 }
 
-/** Kullanıcı girdisini düz metne indirger (HTML etiketlerini ve kontrol karakterlerini temizler). */
-export function sanitizeText(input: string, max = 5000): string {
-  return input
-    .replace(/<[^>]*>/g, "")
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
-    .trim()
-    .slice(0, max);
-}
+export { sanitizeText } from "./sanitize";

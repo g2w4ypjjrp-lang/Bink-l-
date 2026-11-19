@@ -9,6 +9,9 @@ import { formatPrice, formatDateTR, toNumber } from "@/lib/utils";
 import { PageHero } from "@/components/site/PageHero";
 import { JsonLd } from "@/components/site/JsonLd";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("campaigns", { title: "Kampanyalar", description: "BinKılıç Saklı Bahçe güncel kampanyaları, dönemsel menüler ve özel gün fırsatları.", path: "/kampanyalar" });
 }

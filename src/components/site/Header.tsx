@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 import { Logo } from "./Logo";
+import { useOpenStatus } from "./LiveStatus";
 
 const NAV = [
   { href: "/hakkimizda", label: "Hakkımızda" },
@@ -14,7 +15,8 @@ const NAV = [
   { href: "/iletisim", label: "İletişim" },
 ];
 
-export function Header({ logo, phone, telHref, status }: { logo?: string; phone: string; telHref: string; status: { open: boolean; label: string } }) {
+export function Header({ logo, phone, telHref, status: initialStatus }: { logo?: string; phone: string; telHref: string; status: { open: boolean; label: string; detail: string } }) {
+  const status = useOpenStatus(initialStatus);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();

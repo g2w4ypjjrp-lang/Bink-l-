@@ -1,4 +1,5 @@
 import { Phone } from "lucide-react";
+import { StatusDot, StatusLabel, StatusDetail } from "@/components/site/LiveStatus";
 import { getPage, str } from "@/lib/content";
 import { getSiteData } from "@/lib/site";
 import { pageMetadata, breadcrumb } from "@/lib/seo";
@@ -8,12 +9,15 @@ import { ReservationForm } from "@/components/site/forms";
 import { JsonLd } from "@/components/site/JsonLd";
 import { WhatsAppIcon } from "@/components/site/WhatsAppFab";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export async function generateMetadata() {
   return pageMetadata("reservation", { title: "Online Rezervasyon", description: "BinKılıç Saklı Bahçe için online masa rezervasyonu. Kahvaltı, öğle ve akşam yemeği için yerinizi ayırtın.", path: "/rezervasyon" });
 }
 
 export default async function Reservation() {
-  const [{ content: c }, { settings: s, status }] = await Promise.all([getPage("reservation"), getSiteData()]);
+  const [{ content: c }, { settings: s }] = await Promise.all([getPage("reservation"), getSiteData()]);
   return (
     <>
       <PageHero eyebrow={str(c.hero, "eyebrow")} title={str(c.hero, "title")} text={str(c.hero, "text")} image={str(c.hero, "image")} />
@@ -23,7 +27,7 @@ export default async function Reservation() {
             <div className="rounded-[28px] bg-forest p-8 text-cream" data-reveal>
               <p className="eyebrow">Bilgi</p>
               <p className="mt-5 flex items-center gap-2 text-sm">
-                <span className={`h-2 w-2 rounded-full ${status.open ? "bg-emerald-400" : "bg-red-400"}`} /> {status.label} · {status.detail}
+                <StatusDot className="h-2 w-2 rounded-full" openClass="bg-emerald-400" closedClass="bg-red-400" /> <StatusLabel /> · <StatusDetail />
               </p>
               {str(c.hero, "policy") && <p className="mt-5 text-sm leading-relaxed text-cream/75">{str(c.hero, "policy")}</p>}
               <div className="mt-8 space-y-3">

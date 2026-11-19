@@ -5,7 +5,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
   if (parts.some((p) => p === ".." || p.includes("\\"))) return new Response("Not found", { status: 404 });
   const rel = parts.join("/");
   if (rel.endsWith(".svg")) return new Response("Not found", { status: 404 });
-  const f = await readFile(rel);
+  // Küçük sürüm (_s.webp) henüz üretilmediyse (yayından önce yüklenen görsel) orijinali ver
+  const f = (await readFile(rel)) ?? (rel.endsWith("_s.webp") ? await readFile(rel.replace(/_s\.webp$/, ".webp")) : null);
   if (!f) return new Response("Not found", { status: 404 });
   const etag = `"${f.data.length.toString(16)}-${rel.length.toString(16)}"`;
   const headers: Record<string, string> = { "Content-Type": f.mime, "Cache-Control": "public, max-age=31536000, immutable", "X-Content-Type-Options": "nosniff", "Accept-Ranges": "bytes", ETag: etag };

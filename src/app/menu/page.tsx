@@ -2,13 +2,15 @@ import { getMenuData } from "@/lib/menu";
 import { getSiteData } from "@/lib/site";
 import { getPage, str } from "@/lib/content";
 import { pageMetadata, APP_URL } from "@/lib/seo";
-import { isLocale } from "@/lib/i18n";
 import { telLink, waLink } from "@/lib/utils";
 import { db } from "@/lib/db";
 import { MenuApp } from "@/components/menu/MenuApp";
 import { JsonLd } from "@/components/site/JsonLd";
+import { StatusProvider } from "@/components/site/LiveStatus";
+import { hoursData } from "@/lib/hours";
 
-export const dynamic = "force-dynamic";
+// Statik: derleme sırasında bir kez üretilir. Masa (?table=&t=), dil (?lang=) ve ürün (?urun=) tarayıcıda okunur.
+export const dynamic = "force-static";
 
 export async function generateMetadata() {
   return pageMetadata("menu", {
@@ -18,16 +20,14 @@ export async function generateMetadata() {
   });
 }
 
-export default async function MenuPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const sp = await searchParams;
-  const [menu, { settings: s, status }, page] = await Promise.all([getMenuData(), getSiteData(), getPage("menu")]);
-  const tableNo = sp.table ? Number(sp.table) : null;
-  let table: { number: number; token: string; name: string | null } | null = null;
-  if (tableNo && Number.isInteger(tableNo)) {
-    const t = await db.table.findUnique({ where: { number: tableNo } });
-    if (t && t.active) table = { number: t.number, token: sp.t && sp.t === t.orderToken ? t.orderToken : "", name: t.name };
-  }
-  const locale = isLocale(sp.lang) ? sp.lang : s.menu.defaultLocale;
+export default async function MenuPage() {
+  const [menu, { settings: s, status, specials }, page, tableRows] = await Promise.all([
+    getMenuData(),
+    getSiteData(),
+    getPage("menu"),
+    db.table.findMany({ where: { active: true }, select: { number: true, name: true }, orderBy: { number: "asc" } }),
+  ]);
+  const locale = s.menu.defaultLocale;
 
   const menuSchema = {
     "@context": "https://schema.org",
@@ -52,7 +52,7 @@ export default async function MenuPage({ searchParams }: { searchParams: Promise
   };
 
   return (
-    <>
+    <StatusProvider hours={hoursData(s.hours.weekly, specials)} initial={status}>
       <MenuApp
         data={menu}
         initialLocale={locale}
@@ -61,14 +61,12 @@ export default async function MenuPage({ searchParams }: { searchParams: Promise
         showPrices={s.menu.showPrices}
         orderingEnabled={s.menu.orderingEnabled}
         footerNote={s.menu.footerNote}
-        table={table}
-        openProductSlug={sp.urun ?? null}
-        fromQr={sp.src === "qr"}
+        tables={tableRows}
         business={{ name: s.business.name, phone: s.business.phone, tel: telLink(s.business.phone), wa: waLink(s.business.whatsapp), address: s.business.address, logo: s.business.logo }}
         status={status}
         cover={{ title: str(page.content.hero, "title"), text: str(page.content.hero, "text"), image: str(page.content.hero, "image") }}
       />
       <JsonLd data={menuSchema} />
-    </>
+    </StatusProvider>
   );
 }

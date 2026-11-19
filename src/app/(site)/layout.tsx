@@ -7,14 +7,15 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { getSiteData } from "@/lib/site";
 import { restaurantSchema } from "@/lib/seo";
 import { telLink, waLink } from "@/lib/utils";
+import { StatusProvider } from "@/components/site/LiveStatus";
+import { hoursData } from "@/lib/hours";
 
-export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const { settings: s, status } = await getSiteData();
+  const { settings: s, status, specials } = await getSiteData();
   const directions = s.business.googleMapsUrl || `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.business.lat && s.business.lng ? `${s.business.lat},${s.business.lng}` : s.business.mapsQuery)}`;
   return (
-    <>
+    <StatusProvider hours={hoursData(s.hours.weekly, specials)} initial={status}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-forest focus:px-5 focus:py-3 focus:text-cream">
         İçeriğe geç
       </a>
@@ -29,6 +30,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <RevealObserver />
       <ParallaxObserver />
       <Tracker />
-    </>
+    </StatusProvider>
   );
 }

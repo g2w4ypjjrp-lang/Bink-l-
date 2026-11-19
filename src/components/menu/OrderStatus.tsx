@@ -14,8 +14,21 @@ const STEPS = [
   { key: "delivered", icon: UtensilsCrossed },
 ];
 
-export function OrderStatus({ publicId, initial, currency }: { publicId: string; initial: O; currency: string }) {
-  const [o, setO] = useState(initial);
+export function OrderStatus({ publicId: pid, initial, currency }: { publicId?: string; initial?: O | null; currency: string }) {
+  // Statik sayfa: sipariş kimliği adresten (/menu/siparis/<id>) tarayıcıda okunur
+  const [publicId, setPublicId] = useState(pid ?? "");
+  const [o, setO] = useState<O | null>(initial ?? null);
+  const [missing, setMissing] = useState(false);
+  useEffect(() => {
+    if (pid) return;
+    const id = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
+    if (!id || id === "siparis") return setMissing(true);
+    setPublicId(id);
+    fetch(`/api/orders/${encodeURIComponent(id)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => (d ? setO(d) : setMissing(true)))
+      .catch(() => setMissing(true));
+  }, [pid]);
   const [locale, setLocale] = useState("tr");
   const [back, setBack] = useState("/menu");
   useEffect(() => {
@@ -24,13 +37,21 @@ export function OrderStatus({ publicId, initial, currency }: { publicId: string;
   }, []);
   const t = getDict(locale) as unknown as Record<string, string>;
   useEffect(() => {
-    if (o.status === "delivered" || o.status === "cancelled") return;
+    if (!o || !publicId || o.status === "delivered" || o.status === "cancelled") return;
     const i = setInterval(async () => {
       const r = await fetch(`/api/orders/${publicId}`).catch(() => null);
       if (r?.ok) setO(await r.json());
     }, 5000);
     return () => clearInterval(i);
-  }, [publicId, o.status]);
+  }, [publicId, o?.status]);
+  if (missing)
+    return (
+      <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-5 text-center">
+        <p className="font-display text-3xl text-forest">Sipariş bulunamadı</p>
+        <Link href={back} className="btn-primary mt-6">Menüye dön</Link>
+      </main>
+    );
+  if (!o) return <main className="flex min-h-screen items-center justify-center text-sm text-charcoal/60">Yükleniyor…</main>;
   const idx = STEPS.findIndex((s) => s.key === o.status);
   return (
     <main className="mx-auto min-h-screen max-w-lg px-5 pb-16 pt-10">

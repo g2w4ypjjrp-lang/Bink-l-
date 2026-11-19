@@ -14,7 +14,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run",
     "test:e2e": "node tests/e2e/run.mjs",
-    "cf:build": "BUILD_TARGET=cloudflare prisma generate && BUILD_TARGET=cloudflare opennextjs-cloudflare build",
+    "cf:build": "BUILD_TARGET=cloudflare DB_DRIVER=neon prisma generate && BUILD_TARGET=cloudflare DB_DRIVER=neon opennextjs-cloudflare build && node scripts/cf-static.mjs",
     "cf:deploy": "opennextjs-cloudflare deploy"
   },
   "prisma": {

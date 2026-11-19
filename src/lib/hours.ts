@@ -1,5 +1,5 @@
 import { istanbulNow, timeToMinutes, addDaysISO, dateFromISO } from "./utils";
-import type { WeeklyHour } from "./settings";
+import type { WeeklyHour } from "./settings-defaults";
 
 export type SpecialDayLite = { date: Date; type: string; title: string; closed: boolean; open: string | null; close: string | null };
 
@@ -70,4 +70,9 @@ export function reservationSlots(iso: string, weekly: WeeklyHour[], specials: Sp
     out.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
   }
   return out;
+}
+
+/** Tarayıcıda durum hesabı için serileştirilebilir çalışma saatleri (StatusProvider'a verilir). */
+export function hoursData(weekly: WeeklyHour[], specials: SpecialDayLite[]) {
+  return { weekly, specials: specials.map((s) => ({ ...s, date: new Date(s.date).toISOString() })) };
 }

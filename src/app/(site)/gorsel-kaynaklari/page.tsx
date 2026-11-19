@@ -1,6 +1,9 @@
 import credits from "@/lib/image-credits.json";
 import { PageHero } from "@/components/site/PageHero";
 
+// Statik: derleme (Yayınla) sırasında bir kez HTML olarak üretilir; Worker çalışmaz.
+export const dynamic = "force-static";
+
 export const metadata = { title: "Görsel Kaynakları", alternates: { canonical: "/gorsel-kaynaklari" }, robots: { index: false, follow: true } };
 
 type Credit = { item: string; title: string; author: string; license: string; source: string };

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sanitizeText } from "./security";
+import { sanitizeText } from "./sanitize";
 
 const clean = (max: number) => z.string().trim().max(max).transform((v) => sanitizeText(v, max));
 const optClean = (max: number) =>
