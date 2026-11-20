@@ -7,6 +7,7 @@ import type { MenuData, MenuProduct, MenuCategory } from "@/lib/menu";
 import { getDict, LOCALE_NAMES, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { sendEvent } from "@/components/site/Tracker";
+import { Logo } from "@/components/site/Logo";
 import { useOpenStatus } from "@/components/site/LiveStatus";
 import { isLocale } from "@/lib/i18n";
 import { DietIcons, Price, Tags, fmt, normalize, readLS, writeLS, priceInfo } from "./shared";
@@ -275,10 +276,7 @@ export function MenuApp(props: Props) {
             {business.logo ? (
               <Image src={business.logo} alt={business.name} width={120} height={40} className="h-9 w-auto" />
             ) : (
-              <span className="leading-none">
-                <span className="block font-display text-2xl">BinKılıç</span>
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.35em] text-cream/75">Saklı Bahçe</span>
-              </span>
+              <Logo tone="light" className="h-16" />
             )}
           </Link>
           <div className="relative">
@@ -468,7 +466,7 @@ export function MenuApp(props: Props) {
 
       {/* Alt bilgi */}
       <footer className="mx-4 mt-12 rounded-[28px] bg-forest p-6 text-sm text-cream/80">
-        <p className="font-display text-2xl text-cream">{business.name}</p>
+        <Logo tone="light" name={business.name} className="h-16" />
         <p className="mt-3 flex gap-2 text-xs leading-relaxed">
           <MapPin size={14} className="mt-0.5 shrink-0 text-gold" /> {business.address}
         </p>

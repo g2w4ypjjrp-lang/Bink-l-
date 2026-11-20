@@ -38,7 +38,7 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${open ? "bg-ivory" : solid ? "bg-ivory/92 shadow-[0_1px_0_rgba(36,39,34,0.06)] backdrop-blur-xl" : "bg-gradient-to-b from-deep/50 to-transparent"}`}>
       <div className={`container-x flex items-center justify-between transition-all duration-500 ${solid ? "h-[72px]" : "h-[88px]"}`}>
         <Link href="/" aria-label="Ana sayfa" className="relative z-10">
-          <Logo logo={logo} tone={solid ? "dark" : "light"} />
+          <Logo logo={logo} tone={solid ? "dark" : "light"} className={solid ? "h-[56px]" : "h-[68px]"} />
         </Link>
         <nav aria-label="Ana menü" className="hidden lg:block">
           <ul className={`flex items-center gap-8 text-[13.5px] font-medium tracking-wide ${solid ? "text-charcoal" : "text-cream"}`}>

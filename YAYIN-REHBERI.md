@@ -43,7 +43,8 @@ Notlar:
 | `123ac82c-b2d8-471f-94d6-9462321d1ec6` | Değişiklikten **önceki** sürüm (her sayfa Worker'da üretiliyordu) |
 | `a967d611-fe62-46c4-baf9-0b1a58fcf3c7` | Statik sayfalı yeni sürüm (19.11.2026) |
 | `978eb176-4794-4451-85f0-c42a43225119` | + mobil menü düzeltmesi |
-| `3b14766c-08ce-4c30-88f6-e456b1da2da6` | + yönetim paneli hata düzeltmeleri (20.11.2026, **güncel**) |
+| `3b14766c-08ce-4c30-88f6-e456b1da2da6` | + yönetim paneli hata düzeltmeleri (20.11.2026) |
+| `c293e375-876c-4796-b25e-2f84975883b0` | + yeni logo, yayın sonrası otomatik yenileme (**güncel**) |
 
 **Panelden (en kolay):** Cloudflare → Workers & Pages → `sakli-bahce` → **Deployments** → istediğiniz sürümün
 yanındaki **⋯** → **Rollback**.
@@ -76,6 +77,12 @@ Kod GitHub'daki özel depoda durur. Cloudflare, "Yayınla" butonuyla bu depodan 
 
 Worker'da zaten tanımlı gizli değişkenler: `DATABASE_URL`, `SESSION_SECRET`, `APP_URL`. **Hiçbir şifre depoya
 yazılmaz** (`.env*`, `.dev.vars`, `.deploy.env` git dışında).
+
+## Logo
+- Dosyalar: `public/brand/` (logo.webp koyu yazılı, logo-light.webp krem yazılı, icon-*.png sekme/ana ekran simgesi).
+- Kaynak görsel ve üretim betiği: `scripts/brand/` → `node scripts/brand/make-logo.mjs <kaynak.png> <çıktı-klasörü>`.
+- Panelde Ayarlar → İşletme bölümünden ayrı bir logo yüklenirse sitede o kullanılır.
+- Yayından hemen sonraki ~1 dakika içinde eski sayfası açık kalan ziyaretçide betik bulunamazsa sayfa kendiliğinden bir kez yenilenir.
 
 ## Teknik notlar
 - Derleme: `npm run cf:build` = `prisma generate` → `opennextjs-cloudflare build` → `node scripts/cf-static.mjs`

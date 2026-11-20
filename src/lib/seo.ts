@@ -40,7 +40,7 @@ export function restaurantSchema(s: Settings) {
     telephone: `+${normalizePhone(b.phone)}`,
     email: b.email,
     image: [`${APP_URL}${b.ogImage}`],
-    logo: b.logo ? `${APP_URL}${b.logo}` : `${APP_URL}/brand/icon-512.png`,
+    logo: b.logo ? `${APP_URL}${b.logo}` : `${APP_URL}/brand/logo-card.png`,
     priceRange: b.priceRange,
     servesCuisine: b.servesCuisine.split(",").map((x) => x.trim()),
     acceptsReservations: true,

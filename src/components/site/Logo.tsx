@@ -1,25 +1,28 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
+/**
+ * Marka logosu (public/brand/). Kaynak dosya ve üretim betiği: scripts/brand/
+ *  - logo.webp        koyu yazılı — açık zeminler (kaydırılmış üst çubuk, mobil menü)
+ *  - logo-light.webp  krem yazılı — koyu zeminler (ana görsel üstü, alt bilgi)
+ *  - icon-64.png      yalnızca yaprak — küçük simge
+ * Ayarlardan özel bir logo yüklenirse o kullanılır.
+ */
+const LOGO_W = 439;
+const LOGO_H = 240;
 
 export function LeafMark({ className = "h-9 w-9" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <path d="M32 6c12 9 17 21 15.5 35.5C37 37.5 29 28 32 6z" fill="currentColor" opacity=".9" />
-      <path d="M32 6C20 15 15 27 16.5 41.5 27 37.5 35 28 32 6z" fill="currentColor" opacity=".55" />
-      <path d="M32 18v40" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
+  return <img src="/brand/icon-64.png" alt="" aria-hidden="true" width={64} height={64} className={`${className} object-contain`} />;
 }
 
-export function Logo({ logo, name = "BinKılıç Saklı Bahçe", tone = "dark" }: { logo?: string; name?: string; tone?: "dark" | "light" }) {
-  if (logo) return <Image src={logo} alt={name} width={180} height={56} className="h-11 w-auto object-contain" priority />;
-  const color = tone === "light" ? "text-cream" : "text-forest";
+export function Logo({ logo, name = "BinKılıç Saklı Bahçe", tone = "dark", className = "h-14" }: { logo?: string; name?: string; tone?: "dark" | "light"; className?: string }) {
+  if (logo) return <img src={logo} alt={name} className={`${className} w-auto object-contain`} />;
   return (
-    <span className={`flex items-center gap-2.5 ${color}`}>
-      <LeafMark className={`h-9 w-9 ${tone === "light" ? "text-gold" : "text-gold"}`} />
-      <span className="flex flex-col leading-none">
-        <span className="font-display text-[1.45rem] font-medium tracking-tight">BinKılıç</span>
-        <span className="mt-0.5 text-[9.5px] font-semibold uppercase tracking-[0.38em] opacity-80">Saklı Bahçe</span>
-      </span>
-    </span>
+    <img
+      src={tone === "light" ? "/brand/logo-light.webp" : "/brand/logo.webp"}
+      alt={name}
+      width={LOGO_W}
+      height={LOGO_H}
+      fetchPriority="high"
+      className={`${className} w-auto select-none object-contain transition-[height] duration-500`}
+    />
   );
 }

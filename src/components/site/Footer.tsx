@@ -19,7 +19,7 @@ export function Footer({ s, directionsUrl }: { s: Settings; directionsUrl: strin
       <div className="container-x relative">
         <div className="grid gap-12 border-b border-cream/10 py-20 md:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Logo logo={b.logo} tone="light" />
+            <Logo logo={b.logo} tone="light" className="h-24 md:h-28" />
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/65">{b.description}</p>
             {socials.length > 0 && (
               <div className="mt-8 flex gap-3">
