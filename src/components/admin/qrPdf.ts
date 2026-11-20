@@ -1,4 +1,6 @@
 "use client";
+import { qrDataUrl } from "./QrImage";
+
 /** Markalı, Türkçe karakterli QR masa kartlarını tarayıcıda PDF olarak üretir (A4'e 2x2). */
 function loadScript(src: string) {
   return new Promise<void>((ok, err) => {
@@ -11,7 +13,7 @@ function loadScript(src: string) {
   });
 }
 
-type Item = { id: string; title: string; subtitle?: string };
+type Item = { id: string; url: string; title: string; subtitle?: string };
 
 export async function downloadQrPdf(items: Item[], fileName = "qr-kodlar.pdf") {
   // Kütüphaneler statik dosyadan yüklenir (sunucu paketine girmez)
@@ -45,7 +47,7 @@ export async function downloadQrPdf(items: Item[], fileName = "qr-kodlar.pdf") {
       page.drawRectangle({ x: x + m, y: y + cardH - m - 70, width: cardW - 2 * m, height: 70, color: hex("#173D2B") });
       page.drawText("BinKılıç", { x: center(serif, "BinKılıç", 26, x), y: y + cardH - m - 38, size: 26, font: serif, color: hex("#F6F1E7") });
       page.drawText("SAKLI BAHÇE", { x: center(sansB, "SAKLI BAHÇE", 7.5, x) - 10, y: y + cardH - m - 56, size: 7.5, font: sansB, color: hex("#B89A62"), characterSpacing: 2.5 } as never);
-      const png = await pdf.embedPng(await fetch(`/api/admin/qr/${it.id}?format=png&size=700`).then((r) => r.arrayBuffer()));
+      const png = await pdf.embedPng(await qrDataUrl(it.url, 700));
       const qs = 170;
       page.drawImage(png, { x: x + (cardW - qs) / 2, y: y + 92, width: qs, height: qs });
       page.drawText(it.title, { x: center(serif, it.title, 30, x), y: y + 290, size: 30, font: serif, color: hex("#173D2B") });

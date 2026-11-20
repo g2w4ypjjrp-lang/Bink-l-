@@ -67,7 +67,7 @@ export function DashboardClient(p: Props) {
     kpis: (
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {kpiCards.map((c) => (
-          <Link key={c.label} href={c.href} className={cn("rounded-2xl border bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5", c.alert ? "border-gold/60" : "border-charcoal/8")}>
+          <Link prefetch={false} key={c.label} href={c.href} className={cn("rounded-2xl border bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5", c.alert ? "border-gold/60" : "border-charcoal/8")}>
             <div className="flex items-start justify-between">
               <span className="text-[12.5px] font-medium text-charcoal/60">{c.label}</span>
               <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", c.alert ? "bg-gold/20 text-gold-dark" : "bg-forest/8 text-forest")}>
@@ -86,7 +86,7 @@ export function DashboardClient(p: Props) {
       </Card>
     ),
     qr: (
-      <Card title="QR kullanımı (son 30 gün)" actions={<Link href="/admin/qr" className="text-xs font-semibold text-forest">Yönet →</Link>}>
+      <Card title="QR kullanımı (son 30 gün)" actions={<Link prefetch={false} href="/admin/qr" className="text-xs font-semibold text-forest">Yönet →</Link>}>
         <ColumnChart data={p.series.daily} dataKey="qr" name="QR tarama" height={180} />
         <div className="mt-4">
           <BarList items={p.qr.filter((q) => q.period > 0).slice(0, 6).map((q) => ({ name: q.label, value: q.period }))} empty="Son 30 günde QR taraması yok" />
@@ -94,14 +94,14 @@ export function DashboardClient(p: Props) {
       </Card>
     ),
     upcoming: (
-      <Card title="Yaklaşan rezervasyonlar" actions={<Link href="/admin/rezervasyonlar" className="text-xs font-semibold text-forest">Tümü →</Link>} pad={false}>
+      <Card title="Yaklaşan rezervasyonlar" actions={<Link prefetch={false} href="/admin/rezervasyonlar" className="text-xs font-semibold text-forest">Tümü →</Link>} pad={false}>
         {p.recentRes.length === 0 ? (
           <p className="p-8 text-center text-sm text-charcoal/45">Yaklaşan rezervasyon yok</p>
         ) : (
           <ul className="divide-y divide-charcoal/6">
             {p.recentRes.map((r) => (
               <li key={r.id}>
-                <Link href={`/admin/rezervasyonlar?id=${r.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-cream/40">
+                <Link prefetch={false} href={`/admin/rezervasyonlar?id=${r.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-cream/40">
                   <span>
                     <span className="block text-sm font-semibold">{r.name}</span>
                     <span className="text-xs text-charcoal/55">
@@ -117,14 +117,14 @@ export function DashboardClient(p: Props) {
       </Card>
     ),
     orders: (
-      <Card title="Son siparişler" actions={<Link href="/admin/siparisler" className="text-xs font-semibold text-forest">Canlı ekran →</Link>} pad={false}>
+      <Card title="Son siparişler" actions={<Link prefetch={false} href="/admin/siparisler" className="text-xs font-semibold text-forest">Canlı ekran →</Link>} pad={false}>
         {p.recentOrders.length === 0 ? (
           <p className="p-8 text-center text-sm text-charcoal/45">Henüz sipariş yok</p>
         ) : (
           <ul className="divide-y divide-charcoal/6">
             {p.recentOrders.map((o) => (
               <li key={o.id}>
-                <Link href={`/admin/siparisler?id=${o.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-cream/40">
+                <Link prefetch={false} href={`/admin/siparisler?id=${o.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-cream/40">
                   <span>
                     <span className="block text-sm font-semibold">
                       #{o.number} · Masa {o.table ?? "-"}

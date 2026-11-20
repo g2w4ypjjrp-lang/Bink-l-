@@ -51,7 +51,7 @@ export function PageEditor({ def, content }: { def: PageDef; content: Content })
     <div className="pb-24">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Link href="/admin/sayfalar" className="inline-flex items-center gap-1 text-xs font-semibold text-charcoal/55"><ArrowLeft size={13} /> Sayfalar</Link>
+          <Link prefetch={false} href="/admin/sayfalar" className="inline-flex items-center gap-1 text-xs font-semibold text-charcoal/55"><ArrowLeft size={13} /> Sayfalar</Link>
           <h1 className="mt-1 font-display text-[2rem] leading-none text-forest">{def.title}</h1>
         </div>
         <a href={def.slug} target="_blank" className="inline-flex h-11 items-center gap-2 rounded-xl border border-charcoal/12 bg-white px-4 text-sm font-semibold"><ExternalLink size={15} /> Sayfayı aç</a>

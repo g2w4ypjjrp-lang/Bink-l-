@@ -370,6 +370,90 @@ async function upload(sql: Sql, rel: string) {
   return new Response(bytes, { headers: { "Content-Type": mime, "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } });
 }
 
+// ── yönetim paneli: sürekli yoklanan uçlar (bildirim zili, canlı sipariş ekranı)
+// Next.js sürümüyle aynı yetki kuralları; oturum tek SQL sorgusuyla doğrulanır.
+type Admin = { id: string; permissions: string[] };
+function cookieOf(req: Request, name: string) {
+  for (const part of (req.headers.get("cookie") || "").split(/;\s*/)) {
+    const i = part.indexOf("=");
+    if (i > 0 && part.slice(0, i) === name) return part.slice(i + 1);
+  }
+  return null;
+}
+async function sha256Hex(v: string) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function adminUser(req: Request, sql: Sql): Promise<Admin | null> {
+  const token = cookieOf(req, "sb_session");
+  if (!token || token.length > 200) return null;
+  const [row] = await sql`select u.id, coalesce(array_agg(p.key) filter (where p.key is not null), '{}') as permissions
+    from sessions s join users u on u.id = s."userId"
+    left join role_permissions rp on rp."roleId" = u."roleId" left join permissions p on p.id = rp."permissionId"
+    where s."tokenHash" = ${await sha256Hex(token)} and s."expiresAt" > now() and u.active
+    group by u.id`;
+  return row ? { id: row.id as string, permissions: row.permissions as string[] } : null;
+}
+const can = (u: Admin, perms: string[]) => perms.some((p) => u.permissions.includes(p));
+const unauthorized = () => json({ error: "Yetkisiz." }, 401, { "X-Robots-Tag": "noindex, nofollow" });
+const ISO = (col: string) => `to_char(${col}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
+
+function notificationTypes(u: Admin) {
+  const t = ["system"];
+  if (can(u, ["reservations.view", "reservations.manage"])) t.push("reservation");
+  if (can(u, ["orders.view", "orders.manage"])) t.push("order");
+  if (can(u, ["events.manage"])) t.push("event");
+  if (can(u, ["messages.manage"])) t.push("message");
+  return t;
+}
+async function adminNotifications(req: Request, sql: Sql) {
+  const u = await adminUser(req, sql);
+  if (!u) return unauthorized();
+  const types = notificationTypes(u);
+  if (req.method === "POST") {
+    if (!sameOrigin(req)) return json({ error: "Geçersiz istek." }, 403);
+    const b = ((await body(req)) ?? {}) as { ids?: unknown; all?: unknown };
+    if (b.all) await sql`update notifications set read = true where type = any(${types}) and read = false`;
+    else if (Array.isArray(b.ids)) {
+      const ids = b.ids.filter((x): x is string => typeof x === "string").slice(0, 200);
+      if (ids.length) await sql`update notifications set read = true where id = any(${ids}) and type = any(${types})`;
+    }
+    return json({ ok: true });
+  }
+  const take = new URL(req.url).searchParams.get("all") === "1" ? 200 : 12;
+  const [items, [c]] = await Promise.all([
+    sql.query(`select id, type, title, body, link, read, ${ISO('"createdAt"')} as "createdAt" from notifications where type = any($1) order by notifications."createdAt" desc limit $2`, [types, take]),
+    sql`select count(*)::int as n from notifications where type = any(${types}) and read = false`,
+  ]);
+  return json({ items, unread: c.n });
+}
+async function adminOrders(req: Request, sql: Sql) {
+  const u = await adminUser(req, sql);
+  if (!u || !can(u, ["orders.view", "orders.manage"])) return unauthorized();
+  const since = new Date(Date.now() - 36 * 3600_000).toISOString();
+  const orders = await sql.query(
+    `select id, number, status, "tableNumber", note, "customerName", total, "taxAmount", "paymentStatus", "paymentMethod",
+            ${ISO('"createdAt"')} as "createdAt", ${ISO('"updatedAt"')} as "updatedAt"
+     from orders where status in ('new','preparing','ready') or "createdAt" >= ($1::timestamptz at time zone 'UTC')
+     order by orders."createdAt" desc limit 200`,
+    [since],
+  );
+  const ids = orders.map((o) => o.id as string);
+  const items = ids.length ? await sql`select id, "orderId", "productName", quantity, "unitPrice", "lineTotal", note from order_items where "orderId" = any(${ids})` : [];
+  const byOrder = new Map<string, unknown[]>();
+  for (const i of items) {
+    const list = byOrder.get(i.orderId as string) ?? [];
+    list.push({ id: i.id, name: i.productName, quantity: i.quantity, unitPrice: num(i.unitPrice), lineTotal: num(i.lineTotal), note: i.note });
+    byOrder.set(i.orderId as string, list);
+  }
+  return json({
+    orders: orders.map((o) => ({
+      id: o.id, number: o.number, status: o.status, tableNumber: o.tableNumber, note: o.note, customerName: o.customerName, total: num(o.total), taxAmount: num(o.taxAmount),
+      paymentStatus: o.paymentStatus, paymentMethod: o.paymentMethod, createdAt: o.createdAt, updatedAt: o.updatedAt, items: byOrder.get(o.id as string) ?? [],
+    })),
+  });
+}
+
 /** Hafif yol eşleşirse yanıtı döndürür; eşleşmezse null (istek Next.js'e gider). */
 export async function fast(req: Request, env: FastEnv): Promise<Response | null> {
   const { pathname } = new URL(req.url);
@@ -382,6 +466,8 @@ export async function fast(req: Request, env: FastEnv): Promise<Response | null>
       return new Response(r.body, { status: r.ok ? 200 : r.status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } });
     }
     if (m === "GET" && pathname.startsWith("/uploads/")) return await upload(sql(), decodeURIComponent(pathname.slice(9)));
+    if (pathname === "/api/admin/notifications" && (m === "GET" || m === "POST")) return await adminNotifications(req, sql());
+    if (m === "GET" && pathname === "/api/admin/orders") return await adminOrders(req, sql());
     if (!pathname.startsWith("/api/") || pathname.startsWith("/api/admin")) return null;
     if (m === "POST" && pathname === "/api/track") return await track(req, sql());
     if (m === "GET" && pathname === "/api/reservations/slots") return await slots(req, sql());

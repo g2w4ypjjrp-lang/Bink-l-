@@ -2,11 +2,12 @@
 import { fmtDT } from "@/lib/format";
 import { useState } from "react";
 import { Plus, Download, Printer, RefreshCw, ExternalLink, Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { Button, Modal, F, inputCls, Toggle, Badge, PageHeader, Tabs, Card, useRun, useConfirm, useToast } from "@/components/admin/ui";
 import { DataTable } from "@/components/admin/DataTable";
 import { ColumnChart, BarList } from "@/components/admin/Charts";
 import { downloadQrPdf } from "@/components/admin/qrPdf";
+import { QrImage, downloadQr } from "@/components/admin/QrImage";
 import { createTables, saveTable, deleteTables, rotateTableToken, saveQr, toggleQr, deleteQrs } from "./actions";
 
 type Table = { id: string; number: number; name: string; area: string; capacity: number; active: boolean; orders: number };
@@ -29,13 +30,14 @@ export function QrAdmin({ tables, codes, series, devices }: { tables: Table[]; c
     if (!list.length) return toast("error", "Yazdırılacak QR kod yok");
     setPdfBusy(true);
     try {
-      await downloadQrPdf(list.map((c) => ({ id: c.id, title: c.label, subtitle: c.area ? `${c.area} · ${c.url}` : c.url })), name);
+      await downloadQrPdf(list.map((c) => ({ id: c.id, url: c.url, title: c.label, subtitle: c.area ? `${c.area} · ${c.url}` : c.url })), name);
     } catch {
       toast("error", "PDF oluşturulamadı");
     } finally {
       setPdfBusy(false);
     }
   }
+  const dl = (c: Code, f: "png" | "svg") => downloadQr(c.url, `qr-${slugify(c.label) || c.code}`, f).catch(() => toast("error", "QR indirilemedi"));
   const total = codes.reduce((a, c) => a + c.scanCount, 0);
   const period = codes.reduce((a, c) => a + c.period, 0);
   const top = [...codes].sort((a, b) => b.scanCount - a.scanCount)[0];
@@ -77,7 +79,7 @@ export function QrAdmin({ tables, codes, series, devices }: { tables: Table[]; c
             { label: "Sil", danger: true, run: async (ids) => { if (await confirm({ title: `${ids.length} QR kod silinsin mi?`, text: "Basılı QR kodlar artık çalışmaz (menüye yönlenir).", danger: true })) await run(deleteQrs(ids), "Silindi"); } },
           ]}
           columns={[
-            { key: "qr", header: "", csv: false, render: (c) => <img src={`/api/admin/qr/${c.id}?preview=1`} alt="" loading="lazy" className="h-12 w-12 rounded border border-charcoal/10" /> },
+            { key: "qr", header: "", csv: false, render: (c) => <QrImage url={c.url} size={96} className="h-12 w-12 rounded border border-charcoal/10" /> },
             { key: "label", header: "Etiket", sortable: true, value: (c) => c.label, render: (c) => <div><p className="font-semibold">{c.label}</p><p className="text-xs text-charcoal/50">{c.area || c.targetPath}</p></div> },
             { key: "type", header: "Tür", value: (c) => TYPE[c.type], render: (c) => <Badge tone={c.type === "table" ? "green" : "gold"}>{TYPE[c.type]}</Badge> },
             { key: "url", header: "Bağlantı", value: (c) => c.url, hideOnMobile: true, render: (c) => <code className="text-xs text-charcoal/60">/q/{c.code}</code> },
@@ -88,7 +90,7 @@ export function QrAdmin({ tables, codes, series, devices }: { tables: Table[]; c
               key: "dl", header: "İndir", csv: false,
               render: (c) => (
                 <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                  {["png", "svg"].map((f) => <a key={f} href={`/api/admin/qr/${c.id}?format=${f}`} className="rounded-md border border-charcoal/12 px-2 py-1 text-[11px] font-semibold uppercase hover:bg-cream">{f}</a>)}
+                  {(["png", "svg"] as const).map((f) => <button key={f} onClick={() => dl(c, f)} className="rounded-md border border-charcoal/12 px-2 py-1 text-[11px] font-semibold uppercase hover:bg-cream">{f}</button>)}
                   <button onClick={() => pdf([c], `qr-${c.code}.pdf`)} className="rounded-md border border-charcoal/12 px-2 py-1 text-[11px] font-semibold uppercase hover:bg-cream">pdf</button>
                 </div>
               ),
@@ -129,9 +131,9 @@ export function QrAdmin({ tables, codes, series, devices }: { tables: Table[]; c
       {editT && <TableEditor t={editT} onClose={() => setEditT(null)} />}
       {editQ && <QrEditor q={editQ === "new" ? null : editQ} tables={tables} onClose={() => setEditQ(null)} />}
       {preview && (
-        <Modal title={preview.label} onClose={() => setPreview(null)} footer={<><Button variant="ghost" onClick={() => { setEditQ(preview); setPreview(null); }}>Düzenle</Button>{["png", "svg"].map((f) => <a key={f} href={`/api/admin/qr/${preview.id}?format=${f}`} className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-forest px-4 text-sm font-semibold uppercase text-cream"><Download size={14} /> {f}</a>)}<Button loading={pdfBusy} onClick={() => pdf([preview], `qr-${preview.code}.pdf`)}><Download size={14} /> PDF</Button></>}>
+        <Modal title={preview.label} onClose={() => setPreview(null)} footer={<><Button variant="ghost" onClick={() => { setEditQ(preview); setPreview(null); }}>Düzenle</Button>{(["png", "svg"] as const).map((f) => <button key={f} onClick={() => dl(preview, f)} className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-forest px-4 text-sm font-semibold uppercase text-cream"><Download size={14} /> {f}</button>)}<Button loading={pdfBusy} onClick={() => pdf([preview], `qr-${preview.code}.pdf`)}><Download size={14} /> PDF</Button></>}>
           <div className="flex flex-col items-center gap-4 text-center">
-            <img src={`/api/admin/qr/${preview.id}?preview=1`} alt="QR kod" className="h-56 w-56" />
+            <QrImage url={preview.url} size={448} alt="QR kod" className="h-56 w-56" />
             <div className="flex items-center gap-2 rounded-lg bg-cream px-3 py-2 text-sm">
               <code>{preview.url}</code>
               <button onClick={() => { navigator.clipboard.writeText(preview.url); toast("ok", "Bağlantı kopyalandı"); }} aria-label="Kopyala"><Copy size={14} /></button>

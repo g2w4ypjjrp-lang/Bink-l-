@@ -17,7 +17,7 @@ export default async function PagesList() {
         {PAGES.map((p) => {
           const r = rows.find((x) => x.key === p.key);
           return (
-            <Link key={p.key} href={`/admin/sayfalar/${p.key}`} className="group rounded-2xl border border-charcoal/8 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <Link prefetch={false} key={p.key} href={`/admin/sayfalar/${p.key}`} className="group rounded-2xl border border-charcoal/8 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
               <FileText className="text-gold-dark" size={22} />
               <h2 className="mt-4 font-sans text-base font-semibold tracking-normal">{p.title}</h2>
               <p className="mt-1 text-xs text-charcoal/50">{p.slug} · {p.sections.length} bölüm</p>

@@ -46,6 +46,7 @@ function Bellmenu() {
   const last = useRef<string | null>(null);
   const router = useRouter();
   const load = useCallback(async () => {
+    if (document.hidden) return; // arka plandaki sekme sunucuyu yormasın
     const r = await fetch("/api/admin/notifications", { cache: "no-store" }).catch(() => null);
     if (!r?.ok) return;
     const d = (await r.json()) as { items: Notif[]; unread: number };
@@ -59,8 +60,13 @@ function Bellmenu() {
   }, [router]);
   useEffect(() => {
     load();
-    const i = setInterval(load, 15000);
-    return () => clearInterval(i);
+    const i = setInterval(load, 20000);
+    const vis = () => !document.hidden && load();
+    document.addEventListener("visibilitychange", vis);
+    return () => {
+      clearInterval(i);
+      document.removeEventListener("visibilitychange", vis);
+    };
   }, [load]);
   async function mark(body: object) {
     await fetch("/api/admin/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -88,7 +94,7 @@ function Bellmenu() {
               {data.items.length === 0 && <li className="px-4 py-10 text-center text-sm text-charcoal/50">Bildirim yok</li>}
               {data.items.map((n) => (
                 <li key={n.id}>
-                  <Link
+                  <Link prefetch={false}
                     href={n.link || "/admin/bildirimler"}
                     onClick={() => {
                       setOpen(false);
@@ -106,7 +112,7 @@ function Bellmenu() {
                 </li>
               ))}
             </ul>
-            <Link href="/admin/bildirimler" onClick={() => setOpen(false)} className="block border-t border-charcoal/6 py-2.5 text-center text-xs font-semibold text-forest">
+            <Link prefetch={false} href="/admin/bildirimler" onClick={() => setOpen(false)} className="block border-t border-charcoal/6 py-2.5 text-center text-xs font-semibold text-forest">
               Bildirim merkezi
             </Link>
           </div>
@@ -158,7 +164,7 @@ export function Shell({ nav, user, children }: { nav: { group: string; items: Na
                 const active = isActive(it.href);
                 return (
                   <li key={it.href}>
-                    <Link
+                    <Link prefetch={false}
                       href={it.href}
                       title={mini ? it.label : undefined}
                       className={cn("group relative flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition", active ? "bg-cream/12 text-cream" : "text-cream/65 hover:bg-cream/6 hover:text-cream", mini && "justify-center px-0")}
@@ -223,7 +229,7 @@ export function Shell({ nav, user, children }: { nav: { group: string; items: Na
                 <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
                 <div role="menu" className="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-xl border border-charcoal/8 bg-white py-1 shadow-xl">
                   <p className="truncate px-4 py-2 text-xs text-charcoal/50">{user.email}</p>
-                  <Link href="/admin/profil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-cream">
+                  <Link prefetch={false} href="/admin/profil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-cream">
                     <UserCircle size={16} /> Profil & şifre
                   </Link>
                   <form action={logoutAction}>

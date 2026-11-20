@@ -30,6 +30,7 @@ export function OrdersAdmin({ initial, canManage, canToggle, orderingEnabled, op
   const router = useRouter();
 
   const refresh = useCallback(async () => {
+    if (document.hidden) return;
     const r = await fetch("/api/admin/orders", { cache: "no-store" }).catch(() => null);
     if (!r?.ok) return;
     const { orders: live } = (await r.json()) as { orders: Order[] };

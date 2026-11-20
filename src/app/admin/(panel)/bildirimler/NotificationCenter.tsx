@@ -15,10 +15,11 @@ export function NotificationCenter() {
   const [type, setType] = useState("all");
   const [unreadOnly, setUnreadOnly] = useState(false);
   const load = useCallback(async () => {
+    if (document.hidden) return;
     const r = await fetch("/api/admin/notifications?all=1", { cache: "no-store" });
     if (r.ok) setItems((await r.json()).items);
   }, []);
-  useEffect(() => { load(); const i = setInterval(load, 15000); return () => clearInterval(i); }, [load]);
+  useEffect(() => { load(); const i = setInterval(load, 20000); return () => clearInterval(i); }, [load]);
   const mark = async (body: object) => { await fetch("/api/admin/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); load(); };
   const list = items.filter((n) => (type === "all" || n.type === type) && (!unreadOnly || !n.read));
   return (
@@ -35,7 +36,7 @@ export function NotificationCenter() {
           return (
             <li key={n.id} className={cn("flex items-start gap-3 border-b border-charcoal/5 px-4 py-3.5 last:border-0", !n.read && "bg-gold/8")}>
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest/8 text-forest"><I size={16} /></span>
-              <Link href={n.link || "#"} onClick={() => !n.read && mark({ ids: [n.id] })} className="min-w-0 flex-1">
+              <Link prefetch={false} href={n.link || "#"} onClick={() => !n.read && mark({ ids: [n.id] })} className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">{n.title}</p>
                 {n.body && <p className="text-sm text-charcoal/60">{n.body}</p>}
                 <p className="mt-0.5 text-xs text-charcoal/45">{fmtDT(n.createdAt)}</p>
