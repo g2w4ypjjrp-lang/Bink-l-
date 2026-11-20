@@ -11,8 +11,13 @@ Site: https://binkılıçsaklıbahçe.com (`xn--binklsaklbahe-mgbh88ibaf.com`) �
 - **Dinamik işler** (QR yönlendirmesi, rezervasyon, iletişim ve organizasyon formları, QR menüden sipariş,
   hesap isteme, ziyaret sayacı) Worker'ın içinde, Next.js'e girmeden çalışan hafif bir kodla karşılanıyor
   (`src/worker/fast.ts`). Ölçülen süre çoğunlukla 0–4 ms; bir süre boşta kaldıktan sonraki ilk istekte 11 ms'ye kadar çıkabiliyor.
-- **Yönetim paneli** (/admin) eskisi gibi Next.js ile çalışıyor. Panelde ara sıra "Error 1102" görülebilir;
-  sayfayı yenilemek yeterli. Ziyaretçi sayfaları bundan etkilenmez.
+- **Yönetim paneli** (/admin) Next.js ile çalışıyor. Sürekli arka planda çalışan bildirim zili ve canlı sipariş
+  ekranı hafif koda taşındı (1–7 ms). Panel sayfalarının kendisi ağırdır (sayfa başına ~40–100 ms), ama
+  ücretsiz plan normal kullanım hızında buna izin veriyor (test: 18/18 sayfa hatasız açıldı).
+  Çok hızlı art arda sayfa değiştirirseniz nadiren "Error 1102" görülebilir: **5–10 saniye bekleyip sayfayı yenileyin.**
+  Ziyaretçi sayfaları bundan hiç etkilenmez. Bunu tamamen ortadan kaldırmanın yolu Workers Paid planı ($5/ay)
+  ya da panelin baştan yeniden yazılmasıdır.
+- **QR kod görselleri** (PNG / SVG / PDF) panelde, tarayıcınızda üretilir; sunucuya yük bindirmez.
 - **"Şu an açık / kapalı"** bilgisi ziyaretçinin tarayıcısında, her zaman **İstanbul saatine** göre
   hesaplanır ve dakikada bir yenilenir.
 
@@ -37,7 +42,8 @@ Notlar:
 |---|---|
 | `123ac82c-b2d8-471f-94d6-9462321d1ec6` | Değişiklikten **önceki** sürüm (her sayfa Worker'da üretiliyordu) |
 | `a967d611-fe62-46c4-baf9-0b1a58fcf3c7` | Statik sayfalı yeni sürüm (19.11.2026) |
-| `978eb176-4794-4451-85f0-c42a43225119` | + mobil menü düzeltmesi (**güncel**) |
+| `978eb176-4794-4451-85f0-c42a43225119` | + mobil menü düzeltmesi |
+| `3b14766c-08ce-4c30-88f6-e456b1da2da6` | + yönetim paneli hata düzeltmeleri (20.11.2026, **güncel**) |
 
 **Panelden (en kolay):** Cloudflare → Workers & Pages → `sakli-bahce` → **Deployments** → istediğiniz sürümün
 yanındaki **⋯** → **Rollback**.
