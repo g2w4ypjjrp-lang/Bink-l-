@@ -111,8 +111,8 @@ export default async function About() {
               ))}
             </div>
             <div className="mt-20 flex flex-wrap gap-3" data-reveal>
-              <Link href="/rezervasyon" className="btn-primary">
-                Rezervasyon yapın <ArrowRight size={16} />
+              <Link href="/iletisim" className="btn-primary">
+                Bize ulaşın <ArrowRight size={16} />
               </Link>
               <Link href="/galeri" className="btn-ghost text-forest">
                 Galeriyi gezin

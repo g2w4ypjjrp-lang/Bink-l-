@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
   experimental: { serverActions: { bodySizeLimit: "2mb" } },
   async redirects() {
     // www → ana alan adı (Google tek adres görsün)
-    return [{ source: "/:path*", has: [{ type: "host", value: "www.xn--binklsaklbahe-mgbh88ibaf.com" }], destination: "https://xn--binklsaklbahe-mgbh88ibaf.com/:path*", permanent: true }];
+    return [{ source: "/rezervasyon", destination: "/iletisim", permanent: true }, { source: "/:path*", has: [{ type: "host", value: "www.xn--binklsaklbahe-mgbh88ibaf.com" }], destination: "https://xn--binklsaklbahe-mgbh88ibaf.com/:path*", permanent: true }];
   },
   async headers() {
     return [

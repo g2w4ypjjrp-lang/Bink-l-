@@ -4,6 +4,8 @@ import { hasPermission } from "@/lib/permissions";
 import { trafficSeries, visitorsSince, topEntities, qrUsage, istanbulDayStart, istanbulMonthStart, orderedProducts } from "@/lib/stats";
 import { dateFromISO, todayISO, addDaysISO, toNumber } from "@/lib/utils";
 import { DashboardClient } from "@/components/admin/DashboardClient";
+/** Online rezervasyon siteden kaldırıldı; panelde de gösterilmiyor. */
+const RESERVATIONS_ON = false;
 
 export const metadata = { title: "Dashboard" };
 
@@ -27,9 +29,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     db.qrScan.count({ where: { createdAt: { gte: month } } }),
     db.analyticsEvent.count({ where: { type: "menu_view", createdAt: { gte: today } } }),
     db.analyticsEvent.count({ where: { type: "menu_view", createdAt: { gte: month } } }),
-    can("reservations.view") ? db.reservation.count({ where: { date: dateFromISO(todayISO()), status: { in: ["pending", "confirmed"] } } }) : 0,
-    can("reservations.view") ? db.reservation.count({ where: { status: "pending" } }) : 0,
-    can("reservations.view") ? db.reservation.count({ where: { date: { gte: dateFromISO(todayISO()), lte: dateFromISO(addDaysISO(todayISO(), 7)) }, status: { in: ["pending", "confirmed"] } } }) : 0,
+    RESERVATIONS_ON && can("reservations.view") ? db.reservation.count({ where: { date: dateFromISO(todayISO()), status: { in: ["pending", "confirmed"] } } }) : 0,
+    RESERVATIONS_ON && can("reservations.view") ? db.reservation.count({ where: { status: "pending" } }) : 0,
+    RESERVATIONS_ON && can("reservations.view") ? db.reservation.count({ where: { date: { gte: dateFromISO(todayISO()), lte: dateFromISO(addDaysISO(todayISO(), 7)) }, status: { in: ["pending", "confirmed"] } } }) : 0,
     can("events.manage") ? db.eventRequest.count({ where: { status: "new" } }) : 0,
     can("messages.manage") ? db.contactMessage.count({ where: { status: "unread", archived: false } }) : 0,
     can("orders.view") ? db.order.count({ where: { createdAt: { gte: today } } }) : 0,
@@ -42,7 +44,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     showAnalytics ? topEntities("category_view", last30, 8) : [],
     can("qr.manage") || showAnalytics ? qrUsage(last30) : [],
     can("orders.view") ? orderedProducts(last30, 6) : [],
-    can("reservations.view")
+    RESERVATIONS_ON && can("reservations.view")
       ? db.reservation.findMany({ where: { date: { gte: dateFromISO(todayISO()) }, status: { in: ["pending", "confirmed"] } }, orderBy: [{ date: "asc" }, { time: "asc" }], take: 6 })
       : [],
     can("orders.view") ? db.order.findMany({ orderBy: { createdAt: "desc" }, take: 6, include: { _count: { select: { items: true } } } }) : [],
@@ -55,7 +57,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       userName={user.name}
       denied={!!denied}
       prefs={prefs}
-      perms={{ analytics: showAnalytics, reservations: can("reservations.view"), orders: can("orders.view"), events: can("events.manage"), messages: can("messages.manage"), qr: can("qr.manage") || showAnalytics }}
+      perms={{ analytics: showAnalytics, reservations: RESERVATIONS_ON && can("reservations.view"), orders: can("orders.view"), events: can("events.manage"), messages: can("messages.manage"), qr: can("qr.manage") || showAnalytics }}
       kpis={{ visitorsToday, visitorsMonth, qrToday, qrMonth, menuToday, menuMonth, resToday, resPending, resUpcoming, eventsNew, msgsUnread, ordersToday, ordersActive, revenueToday: toNumber(revenueToday?._sum.total ?? 0) }}
       series={{ daily, weekly, monthly }}
       topProducts={topProducts}

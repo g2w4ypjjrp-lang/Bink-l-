@@ -59,8 +59,8 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
           <a href={telHref} className={`hidden h-11 w-11 items-center justify-center rounded-full border transition md:flex ${solid ? "border-forest/20 text-forest hover:bg-forest hover:text-cream" : "border-cream/30 text-cream hover:bg-cream hover:text-forest"}`} aria-label={`Ara: ${phone}`}>
             <Phone size={17} />
           </a>
-          <Link href="/rezervasyon" className={`hidden sm:inline-flex ${solid ? "btn-primary" : "btn-light"} !py-3`}>
-            Rezervasyon
+          <Link href="/menu" className={`hidden sm:inline-flex ${solid ? "btn-primary" : "btn-light"} !py-3`}>
+            Dijital Menü
           </Link>
           <button onClick={() => setOpen((v) => !v)} className={`relative z-10 flex h-11 w-11 items-center justify-center rounded-full lg:hidden ${solid ? "text-forest" : "text-cream"}`} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Menüyü kapat" : "Menüyü aç"}>
             {open ? <X size={24} /> : <Menu size={24} />}
@@ -70,7 +70,7 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
       <div id="mobile-nav" className={`fixed inset-0 top-0 -z-0 h-dvh overflow-y-auto bg-ivory transition-[opacity,visibility] duration-500 lg:hidden ${open ? "visible opacity-100" : "invisible opacity-0"}`}>
         <nav aria-label="Mobil menü" className="container-x flex h-full flex-col pb-10 pt-28">
           <ul className="space-y-1">
-            {[{ href: "/", label: "Ana Sayfa" }, ...NAV, { href: "/rezervasyon", label: "Rezervasyon" }].map((n, i) => (
+            {[{ href: "/", label: "Ana Sayfa" }, ...NAV].map((n, i) => (
               <li key={n.href} style={{ transitionDelay: open ? `${80 + i * 45}ms` : "0ms" }} className={`transition-all duration-500 ${open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
                 <Link href={n.href} className="block border-b border-beige/70 py-3.5 font-display text-[2rem] leading-tight text-forest">
                   {n.label}
@@ -82,8 +82,8 @@ export function Header({ logo, phone, telHref, status: initialStatus }: { logo?:
             <a href={telHref} className="btn-ghost flex-1 text-forest">
               <Phone size={16} /> Ara
             </a>
-            <Link href="/rezervasyon" className="btn-primary flex-1">
-              Rezervasyon
+            <Link href="/menu" className="btn-primary flex-1">
+              Dijital Menü
             </Link>
           </div>
         </nav>

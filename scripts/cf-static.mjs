@@ -28,7 +28,6 @@ const PAGES = {
   "organizasyon.html": "organizasyon.html",
   "kampanyalar.html": "kampanyalar.html",
   "iletisim.html": "iletisim.html",
-  "rezervasyon.html": "rezervasyon.html",
   "kvkk.html": "kvkk.html",
   "gorsel-kaynaklari.html": "gorsel-kaynaklari.html",
   "robots.txt": "robots.txt.body",
@@ -113,6 +112,8 @@ async function writeHeaders() {
   X-Robots-Tag: noindex
 `;
   await fs.writeFile(path.join(OUT, "_headers"), h);
+  // Rezervasyon kaldırıldı: eski bağlantılar iletişim sayfasına gider
+  await fs.writeFile(path.join(OUT, "_redirects"), "/rezervasyon /iletisim 301\n");
   console.log("✓ _headers yazıldı");
 }
 

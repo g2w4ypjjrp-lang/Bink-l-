@@ -43,7 +43,7 @@ export function restaurantSchema(s: Settings) {
     logo: b.logo ? `${APP_URL}${b.logo}` : `${APP_URL}/brand/logo-card.png`,
     priceRange: b.priceRange,
     servesCuisine: b.servesCuisine.split(",").map((x) => x.trim()),
-    acceptsReservations: true,
+    acceptsReservations: false,
     hasMenu: `${APP_URL}/menu`,
     address: { "@type": "PostalAddress", streetAddress: b.streetAddress, addressLocality: b.locality, addressRegion: b.region, postalCode: b.postalCode, addressCountry: "TR" },
     ...(b.lat && b.lng ? { geo: { "@type": "GeoCoordinates", latitude: Number(b.lat), longitude: Number(b.lng) } } : {}),
@@ -52,7 +52,6 @@ export function restaurantSchema(s: Settings) {
       .filter((w) => !w.closed)
       .map((w) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: `https://schema.org/${DAY_SCHEMA[w.day]}`, opens: w.open, closes: w.close === "24:00" ? "23:59" : w.close })),
     ...(sameAs.length ? { sameAs } : {}),
-    potentialAction: { "@type": "ReserveAction", target: { "@type": "EntryPoint", urlTemplate: `${APP_URL}/rezervasyon` }, result: { "@type": "FoodEstablishmentReservation", name: "Rezervasyon" } },
   };
 }
 

@@ -470,8 +470,8 @@ export async function fast(req: Request, env: FastEnv): Promise<Response | null>
     if (m === "GET" && pathname === "/api/admin/orders") return await adminOrders(req, sql());
     if (!pathname.startsWith("/api/") || pathname.startsWith("/api/admin")) return null;
     if (m === "POST" && pathname === "/api/track") return await track(req, sql());
-    if (m === "GET" && pathname === "/api/reservations/slots") return await slots(req, sql());
-    if (m === "POST" && pathname === "/api/reservations") return await reservation(req, sql());
+    // Online rezervasyon kaldırıldı
+    if (pathname.startsWith("/api/reservations")) return json({ error: "Online rezervasyon kaldırıldı. Lütfen bizi arayın." }, 410);
     if (m === "POST" && pathname === "/api/contact") return await contact(req, sql(), env);
     if (m === "POST" && pathname === "/api/events") return await eventRequest(req, sql());
     if (m === "POST" && pathname === "/api/orders") return await order(req, sql());

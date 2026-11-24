@@ -98,12 +98,6 @@ export default async function Organization() {
             <EventForm types={events.map((e) => ({ key: e.key, name: e.name }))} budgets={BUDGETS} />
           </div>
         </div>
-        <p className="mt-10 text-center text-sm text-charcoal/55">
-          Masa rezervasyonu mu yapmak istiyorsunuz?{" "}
-          <Link href="/rezervasyon" className="font-semibold text-forest underline underline-offset-4">
-            Rezervasyon sayfası
-          </Link>
-        </p>
       </section>
       <JsonLd data={breadcrumb([{ name: "Organizasyon", path: "/organizasyon" }])} />
     </>

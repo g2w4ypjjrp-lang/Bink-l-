@@ -46,8 +46,8 @@ export default async function Campaigns() {
                           Menüde gör
                         </Link>
                       )}
-                      <Link href="/rezervasyon" className="btn-ghost text-forest">
-                        Rezervasyon yap
+                      <Link href="/iletisim" className="btn-ghost text-forest">
+                        Bilgi al
                       </Link>
                     </div>
                   </div>

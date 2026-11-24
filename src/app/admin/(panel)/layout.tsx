@@ -10,7 +10,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const user = await requireUser();
   const p = (k: PermissionKey | PermissionKey[]) => hasPermission(user.permissions, k);
   const [newRes, newOrders, newEvents, unreadMsgs, publish] = await Promise.all([
-    p("reservations.view") ? db.reservation.count({ where: { status: "pending" } }) : 0,
+    false && p("reservations.view") ? db.reservation.count({ where: { status: "pending" } }) : 0,
     p("orders.view") ? db.order.count({ where: { status: { in: ["new", "preparing", "ready"] } } }) : 0,
     p("events.manage") ? db.eventRequest.count({ where: { status: "new" } }) : 0,
     p("messages.manage") ? db.contactMessage.count({ where: { status: "unread", archived: false } }) : 0,
@@ -22,7 +22,6 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       group: "Operasyon",
       items: [
         { href: "/admin/siparisler", label: "Siparişler", icon: "ClipboardList", perm: ["orders.view", "orders.manage"], badge: newOrders },
-        { href: "/admin/rezervasyonlar", label: "Rezervasyonlar", icon: "CalendarDays", perm: ["reservations.view", "reservations.manage"], badge: newRes },
         { href: "/admin/organizasyonlar", label: "Organizasyonlar", icon: "PartyPopper", perm: "events.manage", badge: newEvents },
         { href: "/admin/mesajlar", label: "Mesajlar", icon: "MessageSquare", perm: "messages.manage", badge: unreadMsgs },
         { href: "/admin/bildirimler", label: "Bildirimler", icon: "Bell", perm: "dashboard.view" },

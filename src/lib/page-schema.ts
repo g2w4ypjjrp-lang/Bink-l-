@@ -30,7 +30,6 @@ export const PAGES: PageDef[] = [
         { key: "image", label: "Arka plan görseli", type: "image" },
         { key: "video", label: "Arka plan videosu (opsiyonel, mp4)", type: "video" },
         { key: "menuButton", label: "Menü butonu metni", type: "text" },
-        { key: "reservationButton", label: "Rezervasyon butonu metni", type: "text" },
       ] },
       { key: "story", label: "Marka Hikâyesi", fields: heading([{ key: "image", label: "Görsel", type: "image" }, { key: "image2", label: "İkinci görsel", type: "image" }, { key: "signature", label: "İmza / alt not", type: "text" }]) },
       { key: "atmosphere", label: "Saklı Bahçe Atmosferi", fields: heading([
@@ -47,7 +46,6 @@ export const PAGES: PageDef[] = [
       ]) },
       { key: "reviews", label: "Misafir Yorumları", fields: heading() },
       { key: "events", label: "Organizasyonlar", fields: heading([{ key: "image", label: "Görsel", type: "image" }]) },
-      { key: "reservation", label: "Rezervasyon Alanı", fields: heading([{ key: "image", label: "Görsel", type: "image" }]) },
       { key: "location", label: "Konum ve Yol Tarifi", fields: heading([{ key: "directions", label: "Ulaşım notu", type: "textarea" }]) },
       { key: "faq", label: "Sık Sorulan Sorular", fields: heading([
         { key: "items", label: "Sorular", type: "list", fields: [{ key: "q", label: "Soru", type: "text" }, { key: "a", label: "Cevap", type: "textarea" }] },
@@ -103,12 +101,6 @@ export const PAGES: PageDef[] = [
       { key: "hero", label: "Sayfa Başlığı", fields: heading([{ key: "image", label: "Görsel", type: "image" }]) },
       { key: "form", label: "İletişim Formu", fields: heading() },
     ],
-  },
-  {
-    key: "reservation",
-    title: "Rezervasyon",
-    slug: "/rezervasyon",
-    sections: [{ key: "hero", label: "Sayfa Başlığı", fields: heading([{ key: "image", label: "Görsel", type: "image" }, { key: "policy", label: "Rezervasyon koşulları", type: "textarea" }]) }],
   },
   {
     key: "campaigns",
@@ -208,7 +200,6 @@ export const DEFAULT_CONTENT: Record<string, Record<string, Record<string, unkno
       title: "Merak edilenler",
       text: "",
       items: [
-        { q: "Rezervasyon yapmak zorunlu mu?", a: "Zorunlu değildir; ancak hafta sonları ve resmî tatillerde yer garantisi için rezervasyon yapmanızı öneririz." },
         { q: "Serpme kahvaltı saat kaça kadar servis ediliyor?", a: "Kahvaltı servisimiz her gün açılıştan 14:00'e kadar devam eder." },
         { q: "Otopark var mı?", a: "Evet, misafirlerimiz için ücretsiz otoparkımız bulunmaktadır." },
         { q: "Evcil hayvanımla gelebilir miyim?", a: "Bahçe alanımızda tasmalı evcil dostlarınızı ağırlamaktan mutluluk duyarız." },
@@ -216,7 +207,7 @@ export const DEFAULT_CONTENT: Record<string, Record<string, Record<string, unkno
         { q: "Vejetaryen ve vegan seçenekleriniz var mı?", a: "Evet. Dijital menümüzde vejetaryen ve vegan ürünler özel olarak işaretlenmiştir." },
       ],
     },
-    contact: { visible: true, eyebrow: "İletişim", title: "Bize ulaşın", text: "Sorularınız, rezervasyon ve organizasyon talepleriniz için bize her zaman yazabilirsiniz." },
+    contact: { visible: true, eyebrow: "İletişim", title: "Bize ulaşın", text: "Sorularınız ve organizasyon talepleriniz için bize her zaman yazabilirsiniz." },
   },
   about: {
     hero: { visible: true, eyebrow: "Hakkımızda", title: "Doğanın misafiri, sofranın ev sahibi", text: "Binkılıç'ın ormanlarında, bir ailenin misafirperverliğiyle büyüyen saklı bir bahçe.", image: img("forest-path") },
@@ -265,7 +256,7 @@ export const DEFAULT_CONTENT: Record<string, Record<string, Record<string, unkno
         { year: "Başlangıç", title: "Aile bahçesi", text: "Ailemizin bahçesinde dostlar için kurulan ilk kahvaltı sofraları." },
         { year: "Kuruluş", title: "Saklı Bahçe kapılarını açtı", text: "Bahçemizi misafirlerimize açarak ilk servisimizi verdik." },
         { year: "Büyüme", title: "Organizasyonlar", text: "Doğum günleri, nişanlar ve kurumsal davetler için alanlarımızı genişlettik." },
-        { year: "Bugün", title: "Dijital deneyim", text: "QR menü ve online rezervasyonla misafirlerimize daha hızlı hizmet veriyoruz." },
+        { year: "Bugün", title: "Dijital deneyim", text: "QR menüyle misafirlerimize daha hızlı hizmet veriyoruz." },
       ],
     },
     mission: { visible: true, eyebrow: "Misyonumuz", title: "Misyon", text: "Doğanın içinde, taze ve yerel malzemelerle hazırlanan lezzetleri, aile sıcaklığında bir hizmetle sunarak misafirlerimize şehirden uzak, huzurlu ve unutulmaz bir deneyim yaşatmak." },

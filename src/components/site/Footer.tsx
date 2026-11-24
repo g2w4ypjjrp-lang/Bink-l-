@@ -64,7 +64,7 @@ export function Footer({ s, directionsUrl }: { s: Settings; directionsUrl: strin
           <div className="lg:col-span-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">Keşfet</h2>
             <ul className="mt-6 space-y-3 text-sm">
-              {[["/menu", "Dijital Menü"], ["/rezervasyon", "Rezervasyon"], ["/organizasyon", "Organizasyon"], ["/galeri", "Galeri"], ["/kampanyalar", "Kampanyalar"], ["/hakkimizda", "Hakkımızda"], ["/iletisim", "İletişim"]].map(([h, l]) => (
+              {[["/menu", "Dijital Menü"], ["/organizasyon", "Organizasyon"], ["/galeri", "Galeri"], ["/kampanyalar", "Kampanyalar"], ["/hakkimizda", "Hakkımızda"], ["/iletisim", "İletişim"]].map(([h, l]) => (
                 <li key={h}>
                   <Link href={h} className="link-underline hover:text-cream">
                     {l}

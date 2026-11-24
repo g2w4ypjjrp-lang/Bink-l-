@@ -9,7 +9,6 @@ import { getMenuData, effectivePrice, activeCampaignWhere } from "@/lib/menu";
 import { pageMetadata } from "@/lib/seo";
 import { formatPrice, telLink, waLink, toNumber, formatDateTR } from "@/lib/utils";
 import { SectionHeading, Paragraphs } from "@/components/site/Section";
-import { ReservationForm } from "@/components/site/forms";
 import { GalleryGrid } from "@/components/site/Gallery";
 import { MapEmbed } from "@/components/site/MapEmbed";
 import { WhatsAppIcon } from "@/components/site/WhatsAppFab";
@@ -21,7 +20,7 @@ export const dynamic = "force-static";
 export async function generateMetadata() {
   return pageMetadata("home", {
     title: "BinKılıç Saklı Bahçe | Çatalca'da Doğa İçinde Restoran & Kahvaltı",
-    description: "Çatalca Binkılıç'ta orman içinde serpme kahvaltı, ızgara ve aile restoranı. Organizasyon ve online rezervasyon.",
+    description: "Çatalca Binkılıç'ta orman içinde serpme kahvaltı, ızgara ve aile restoranı. Organizasyon ve dijital menü.",
     path: "/",
   });
 }
@@ -77,9 +76,6 @@ export default async function Home() {
               <div className="mt-10 flex animate-fade-up flex-wrap gap-3 [animation-delay:360ms]">
                 <Link href="/menu" className="btn-light !px-7 !py-4">
                   {str(hero, "menuButton") || "Menüye Göz At"} <ArrowRight size={16} />
-                </Link>
-                <Link href="/rezervasyon" className="btn-gold !px-7 !py-4">
-                  {str(hero, "reservationButton") || "Rezervasyon Yap"}
                 </Link>
                 <a href={waLink(b.whatsapp, "Merhaba, bilgi almak istiyorum.")} target="_blank" rel="noopener noreferrer" className="btn-ghost !px-6 !py-4 text-cream">
                   <WhatsAppIcon size={18} /> WhatsApp
@@ -405,33 +401,6 @@ export default async function Home() {
                 </Link>
               </li>
             </ul>
-          </div>
-        </section>
-      )}
-
-      {/* 10 · REZERVASYON */}
-      {c.reservation.visible !== false && s.reservation.enabled && (
-        <section id="rezervasyon" className="bg-ivory py-24 sm:py-36">
-          <div className="container-x grid gap-14 lg:grid-cols-12">
-            <div className="lg:col-span-5">
-              <SectionHeading eyebrow={str(c.reservation, "eyebrow")} title={str(c.reservation, "title")} text={str(c.reservation, "text")} />
-              {str(c.reservation, "image") && (
-                <div data-reveal="scale" className="relative mt-12 hidden aspect-[4/5] overflow-hidden rounded-[28px] lg:block">
-                  <Image src={str(c.reservation, "image")} alt="Bahçede kurulmuş uzun masa" fill sizes="40vw" className="object-cover" />
-                </div>
-              )}
-            </div>
-            <div className="lg:col-span-6 lg:col-start-7" data-reveal>
-              <div className="rounded-[32px] border border-beige/80 bg-cream/60 p-6 sm:p-10">
-                <ReservationForm seatingOptions={s.reservation.seatingOptions} maxGuests={s.reservation.maxGuests} maxDaysAhead={s.reservation.maxDaysAhead} compact />
-              </div>
-              <p className="mt-5 text-center text-sm text-charcoal/60">
-                Telefonla rezervasyon:{" "}
-                <a href={telLink(b.phone)} className="font-semibold text-forest">
-                  {b.phone}
-                </a>
-              </p>
-            </div>
           </div>
         </section>
       )}
