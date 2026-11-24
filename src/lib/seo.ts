@@ -34,7 +34,8 @@ export function restaurantSchema(s: Settings) {
     "@type": ["Restaurant", "LocalBusiness"],
     "@id": `${APP_URL}/#restaurant`,
     name: b.name,
-    alternateName: ["Saklı Bahçe Binkılıç", "Binkılıç Saklı Bahçe"],
+    alternateName: ["Saklı Bahçe", "Saklı Bahçe Çatalca", "Saklı Bahçe İstanbul", "Çatalca Saklı Bahçe", "Saklı Bahçe Binkılıç", "Binkılıç Saklı Bahçe"],
+    keywords: "Saklı Bahçe, Saklı Bahçe Çatalca, Saklı Bahçe İstanbul, Çatalca kahvaltı, Binkılıç restoran",
     description: b.description,
     url: APP_URL,
     telephone: `+${normalizePhone(b.phone)}`,
@@ -52,6 +53,20 @@ export function restaurantSchema(s: Settings) {
       .filter((w) => !w.closed)
       .map((w) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: `https://schema.org/${DAY_SCHEMA[w.day]}`, opens: w.open, closes: w.close === "24:00" ? "23:59" : w.close })),
     ...(sameAs.length ? { sameAs } : {}),
+  };
+}
+
+// Google'ın arama sonuçlarında gösterdiği site adı için (sayfada görünmez).
+export function websiteSchema(s: Settings) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${APP_URL}/#website`,
+    name: s.business.name,
+    alternateName: ["Saklı Bahçe", "Saklı Bahçe Çatalca", "Binkılıç Saklı Bahçe"],
+    url: APP_URL,
+    inLanguage: "tr-TR",
+    publisher: { "@id": `${APP_URL}/#restaurant` },
   };
 }
 

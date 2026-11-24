@@ -5,7 +5,7 @@ import { RevealObserver, ParallaxObserver } from "@/components/site/Reveal";
 import { Tracker } from "@/components/site/Tracker";
 import { JsonLd } from "@/components/site/JsonLd";
 import { getSiteData } from "@/lib/site";
-import { restaurantSchema } from "@/lib/seo";
+import { restaurantSchema, websiteSchema } from "@/lib/seo";
 import { telLink, waLink } from "@/lib/utils";
 import { StatusProvider } from "@/components/site/LiveStatus";
 import { hoursData } from "@/lib/hours";
@@ -27,6 +27,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Footer s={s} directionsUrl={directions} />
       {s.site.whatsappFloating && <WhatsAppFab href={waLink(s.business.whatsapp, "Merhaba, BinKılıç Saklı Bahçe hakkında bilgi almak istiyorum.")} />}
       <JsonLd data={restaurantSchema(s)} />
+      <JsonLd data={websiteSchema(s)} />
       <RevealObserver />
       <ParallaxObserver />
       <Tracker />

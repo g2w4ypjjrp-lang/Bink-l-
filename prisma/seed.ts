@@ -195,9 +195,9 @@ async function main() {
   await db.page.update({
     where: { key: "home" },
     data: {
-      seoTitle: "BinKılıç Saklı Bahçe | Çatalca'da Doğa İçinde Restoran, Kahvaltı & Organizasyon",
-      seoDescription: "Çatalca Binkılıç'ta orman içinde serpme kahvaltı, ızgara ve aile restoranı. Doğum günü, nişan, düğün ve özel organizasyonlar için Saklı Bahçe. Online rezervasyon.",
-      seoKeywords: "BinKılıç Saklı Bahçe, Çatalca restoran, Binkılıç restoran, Çatalca kahvaltı, doğa içinde restoran, Çatalca organizasyon, serpme kahvaltı İstanbul",
+      seoTitle: "BinKılıç Saklı Bahçe Çatalca | Doğa İçinde Kahvaltı, Restoran & Organizasyon",
+      seoDescription: "Saklı Bahçe, Çatalca Binkılıç'ta orman içinde serpme kahvaltı, ızgara ve aile restoranı. İstanbul'a yakın doğa içinde doğum günü, nişan ve kır düğünü organizasyonları.",
+      seoKeywords: "Saklı Bahçe, Saklı Bahçe Çatalca, Saklı Bahçe İstanbul, BinKılıç Saklı Bahçe, Çatalca restoran, Binkılıç restoran, Çatalca kahvaltı, serpme kahvaltı İstanbul, doğa içinde restoran, Çatalca organizasyon",
     },
   });
 
